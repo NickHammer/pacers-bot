@@ -1,0 +1,27 @@
+name: Daily Tweet
+
+on:
+  schedule:
+    # Run at 9:00 AM UTC every day
+    - cron: '0 9 * * *'
+
+jobs:
+  tweet:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        pip install tweepy python-dotenv
+
+    - name: Run the countdown bot
+      run: |
+        python bot.py

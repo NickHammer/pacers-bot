@@ -1,25 +1,29 @@
-import os
-import requests
-from dotenv import load_dotenv
+import tweepy
 from datetime import datetime
+from dotenv import load_dotenv
+import os
 
 # Load environment variables from .env file
 load_dotenv()
 
-# Your Twitter API v2 credentials from the .env file
-bearer_token = os.getenv('BEARER_TOKEN')
+# Your Twitter API credentials from the .env file
+api_key = os.getenv('API_KEY')
+api_secret_key = os.getenv('API_SECRET_KEY')
+access_token = os.getenv('ACCESS_TOKEN')
+access_token_secret = os.getenv('ACCESS_TOKEN_SECRET')
 
-def create_tweet(bearer_token, tweet_text):
-    url = "https://api.twitter.com/2/tweets"
-    headers = {"Authorization": f"Bearer {bearer_token}"}
-    payload = {"text": tweet_text}
+# Authenticate with Twitter using OAuth 1.0a User Context
+auth = tweepy.OAuthHandler(api_key, api_secret_key)
+auth.set_access_token(access_token, access_token_secret)
+api = tweepy.API(auth, wait_on_rate_limit=True)
 
-    response = requests.post(url, json=payload, headers=headers)
-
-    if response.status_code != 201:
-        raise Exception(f"Request returned an error: {response.status_code} {response.text}")
-
-    print("Tweet posted successfully!")
+# Verify the credentials
+try:
+    api.verify_credentials()
+    print("Authentication OK")
+except tweepy.errors.TweepyException as e:
+    print(f"Error during authentication: {e}")
+    exit()
 
 # Calculate the days left
 game_day = datetime(2024, 10, 23)  # Example game date
@@ -28,6 +32,4 @@ days_left = (game_day - today).days
 
 # Create the tweet
 tweet = f"The Pacers play basketball in {days_left} days"
-
-# Post the tweet
-create_tweet(bearer_token, tweet)
+api.update_status(tweet)

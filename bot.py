@@ -15,7 +15,14 @@ access_token_secret = os.getenv('ACCESS_TOKEN_SECRET')
 # Authenticate with Twitter
 auth = tweepy.OAuthHandler(api_key, api_secret_key)
 auth.set_access_token(access_token, access_token_secret)
-api = tweepy.API(auth)
+api = tweepy.API(auth, wait_on_rate_limit=True)
+
+# Verify the credentials
+try:
+    api.verify_credentials()
+    print("Authentication OK")
+except:
+    print("Error during authentication")
 
 # Calculate the days left
 game_day = datetime(2024, 10, 23)  # Example game date

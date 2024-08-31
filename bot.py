@@ -21,15 +21,21 @@ api = tweepy.API(auth, wait_on_rate_limit=True)
 try:
     api.verify_credentials()
     print("Authentication OK")
-except tweepy.errors.TweepyException as e:
+except tweepy.TweepyException as e:
     print(f"Error during authentication: {e}")
     exit()
 
-# Calculate the days left
+# Calculate the days left until the game
 game_day = datetime(2024, 10, 23)  # Example game date
 today = datetime.now()
 days_left = (game_day - today).days
 
 # Create the tweet
 tweet = f"The Pacers play basketball in {days_left} days"
-api.update_status(tweet)
+
+# Post the tweet and handle potential errors
+try:
+    api.update_status(tweet)
+    print("Tweet posted successfully!")
+except tweepy.TweepyException as e:
+    print(f"Error posting tweet: {e}")
